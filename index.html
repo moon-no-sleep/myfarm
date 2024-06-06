@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">   
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Farm</title>
+  </head>
+  <body>
+    <div id="myfarm"></div>
+
+     <script type="module" ></script>
+<script>
+      function updateTime() {
+        var now = new Date();
+        var hours = now.getHours().toString().padStart(2, '0');
+        var minutes = now.getMinutes().toString().padStart(2, '0');
+        var seconds = now.getSeconds().toString().padStart(2, '0');
+        document.getElementById('current-time').textContent = `${hours}:${minutes}:${seconds}`;
+
+      }
+       
+      setInterval(updateTime, 1000); // Update the time every second
+      updateTime(); // Initialize the time display
+      </script> 
+
+
+
+    <form>
+      
+      <p>现在时间:   <time id="current-time" >00:00:00</time></p> <br>
+      <label for="what">多少小时成熟作物:</label><br>
+      <select id="what" name="what">
+        <option value="32">1天8小时</option>
+        <option value="16"> 16小时</option>
+        <option value="12"> 12小时</option>
+        <option value="6"> 6小时</option>
+        <option value="1"> 1小时</option>
+        <!-- <option value="20min">Audi</option>
+        <option value="10min">Audi</option>
+        <option value="6min">Audi</option> -->
+      </select><br><br>       
+
+
+      <label for="ripe_time_h">成熟时间剩余(如 13:14)</label><br>
+      <input type="number" id="ripe_time_h" name="ripe_time" value="13" min="0" max="32" ><span text-align="center" >:</span>
+      <input type="number" id="ripe_time_m" name="ripe_time"  value="14" min="0" max="60" ><br>
+      <label for="water_time">水分保持时间:</label><br>      
+      <input type="number" id="water_time_h" name="water_time" value="5" min="0" max="10" ><span text-align="center" >:</span>
+      <input type="number" id="water_time_m" name="water_time" value="20" min="0" max="60" ><br><br>
+
+      <button type="button" onclick="farmevent()">计算</button><br><br>
+
+      <!-- <input type="submit" value="submit" onclick="farmevent()"><br><br> -->
+
+
+      <h2>结果:</h2> 
+      <p>等待  <span id="last_water_h" style="color:red">00</span >小时<span id="last_water_m" style="color:red">00</span>分钟  后, 最后一次浇水</p>         
+      <p>最后一次浇水的具体时间是   <time id="local_time" style="color:red">00:00</time></p>
+      <br>  
+
+      <p>注意: 本页面的时间为 <b>24小时制. </b></p>
+        
+    </form> 
+
+    <script>                     
+      function farmevent(){      
+
+      let a = document.getElementById('what').value;
+      let bt,yt_h,yt_m,yt,ct_h,ct_m,ct,dt,x;
+
+      // 水分保持时间
+     const all_time ={
+          "32" :640,
+          "16":320,
+          "12":240,
+          "6":120,
+          "1":20
+        }
+
+        bt= all_time[a]
+
+    
+
+      // let ct = document.getElementById('ripe_time').value;
+      yt_h = document.getElementById('water_time_h').value;
+      yt_m = document.getElementById('water_time_m').value;
+      yt= Number(yt_h)*60+Number(yt_m)
+
+
+      ct_h= document.getElementById('ripe_time_h').value;
+      ct_m= document.getElementById('ripe_time_m').value;
+      ct= Number(ct_h)*60+Number(ct_m);
+
+      dt = bt- yt;  
+      x= 4*ct/5 - dt/5;
+
+      let xh,xm
+
+      // 计算最后一次浇水时间
+       xh= Math.trunc(x/60);
+       xm = x%60;
+
+    
+
+      //  四舍五入取整
+       round_xm = Math.round(xm)
+     
+
+       document.getElementById('last_water_h').textContent= xh;
+       document.getElementById('last_water_m').textContent= round_xm;
+
+
+      let now2 = new Date();
+      let hours2 = now2.getHours();
+      let minutes2 = now2.getMinutes();
+
+   
+
+      // 现在时间和等待时间相加
+      let to_min,total_min,xh_h,xm_m
+       to_min= (hours2)*60+(minutes2)
+       total_min= x+to_min
+
+       xh_h= Math.trunc(total_min/60)
+       xm_m = Math.round(total_min%60)
+
+      //  console.log(xh_h,xm_m)
+
+
+
+            //  大于24小时优化
+      let which_day
+       if (xh_h>24){xh_h=xh_h-24,which_day= " 明天 "}
+       else {which_day =" 今天 "}
+
+
+       let xh2,xm2
+      //  填充"0"字符
+      xh2= xh_h.toString().padStart(2, '0');
+      xm2= xm_m.toString().padStart(2, '0');   
+
+
+
+      //  设置文本
+      document.getElementById('local_time').textContent= which_day+`${xh2}:${xm2}`;
+
+
+
+}    
+    </script>
+  </body>
+</html>
